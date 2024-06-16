@@ -8,3 +8,18 @@ for(i in 1:999){
   }
 }
 print(sum)
+
+##Euler's 2
+
+fibSum <- 0
+num1 <- 0
+num2 <- 1
+while(num2 < 4000000){
+  temp = num1
+  num1 = num2
+  num2 = num1 + temp
+  
+  if(num1%%2 == 0)
+    fibSum <- fibSum + num1
+}
+fibSum
