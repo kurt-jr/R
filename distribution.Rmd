@@ -1,0 +1,46 @@
+---
+title: "distribution"
+author: "Kurt"
+date: "2024-06-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r }
+uniformDis <- runif(999)
+hist(uniformDis)
+```
+
+```{r}
+ normalDis <- rnorm(999)
+
+hist(normalDis)
+```
+
+```{r}
+x <- rbinom(999,150,.4)
+hist(x)
+```
+The Central Limit Theorem says that as n increases, the binomial distribution with n trials and probability p of success gets closer and closer to a normal distribution. That is, the binomial probability of any event gets closer and closer to the normal probability of the same event.
