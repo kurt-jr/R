@@ -18,5 +18,19 @@ fibonacci <- function(n) {
   }
   return(fib)
 }
+#10.3
+in_unit_interval <- function(x){
+  if (x >= 0 & x <= 1){
+    return(1)
+  }
+  else {
+    return(0)
+  }
+}
+in_unit_interval(5)
+in_unit_interval(0.5)
+in_unit_interval(07.5)
+in_unit_interval(.75)
+in_unit_interval(9999999999)
 
 fibonacci(10)
