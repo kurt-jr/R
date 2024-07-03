@@ -65,3 +65,4 @@ str1 <- "The quick Brown fox jumps over the lazy dog"
 sv1 <- unlist(strsplit(tolower(str1), " "))
 print(sv1)
 print(unique(sv1))
+
