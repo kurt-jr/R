@@ -15,9 +15,9 @@ output: pdf_document
 
 # Student Info
 
-    Name:
-    Ned ID:
-    URL of this file on GitHub:
+    Name: Kurt 
+    Ned ID: nps3cs
+    URL of this file on GitHub: https://github.com/kurt-jr/R/blob/main/M10-HW-1-1.Rmd
 
 # Instructions
 
@@ -99,7 +99,23 @@ for each bracket. You should end up with columns for the earnings in
 dollars for each bracket, as well as the payout in dollars.
 
 ```{r}
-# CODE HERE
+quota <- 225000
+
+df <- data.frame(
+    cut         = c(.40, .30, .20, .10),
+    payoutPrct  = c(.07, .10, .13, .16)
+)
+
+df$cutsum <- cumsum(df$cut)
+
+df$amount <- df$cut * quota
+
+df$payout <- df$amount * df$payoutPrct
+
+df$payoutsum <- cumsum(df$payout)
+
+df$amountsum <- cumsum(df$amount)
+df
 ```
 
 # Task 2
@@ -120,7 +136,38 @@ dataframe do the work.** In your function, match the amount earned to
 the appropriate row in your first dataframe to get the answer.
 
 ```{r}
-# CODE HERE
+getPayout <- function(qqFrac) {
+  
+ 
+  row1 <- nrow(df[qqFrac >= df$cutSum, ])
+  row2 <- row1 + 1
+  
+  # current bracket
+  if (row1 > 0) {
+    cutSum <- round(df[row1, 'cutSum'], 1)
+  } else {
+    cutSum <- 0
+  }
+  remainder <- round(qqFrac, 1) - cutSum
+  
+  #payout bracket
+  if (row2 <= 4) {
+    b <- quota * df[row2, 'payoutPrct'] * remainder
+  } else {
+    b <- 0
+  }
+  #previous brackets
+  if (row1 > 0) {
+    a <- df[row1, 'payoutSum']
+  } else {
+    a <- 0
+  }
+  
+  payout <- a + b
+  return(payout)
+
+}
+
 ```
 
 # Task 3
@@ -136,7 +183,9 @@ dataframe. That is, create a dataframe with columns for percent of quota
 earned and payout for that amount.
 
 ```{r}
-# CODE HERE
+df2 <- data.frame(i = seq(.1, 1, by=.1))
+df2$payout <- apply(df2, 1, getPayout)
+df2
 ```
 
 # Task 4
@@ -151,7 +200,9 @@ Hint: for both axes, use the cumulative sums, which you should have
 defined above.
 
 ```{r}
-# CODE HERE
+
+plot(df[c('amountsum','payoutsum')], type='b',lty = 9)
+
 ```
 # Task 5 
 
@@ -162,5 +213,7 @@ Using the second dataframe, plot the dollar amount for each increment (x-axis) v
 Again, display the graph using both points and lines.
 
 ```{r}
-# CODE HERE
+
+df2$earned <- df2$i * quota
+plot(df2[c('earned','payout')], type='b', lty = 5)
 ```
