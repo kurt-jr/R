@@ -6,6 +6,7 @@ output: html_document
 ---
 Question [1]
 ```{r}
+library(tidyverse)
 OurData <- read.csv('ClassData.csv')
 head(OurData)
 ```
