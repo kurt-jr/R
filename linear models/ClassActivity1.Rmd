@@ -1,0 +1,29 @@
+---
+title: "Class Activity 1"
+author: "Kurt"
+date: "2024-07-16"
+output: html_document
+---
+Question [1]
+```{r}
+OurData <- read.csv('ClassData.csv')
+head(OurData)
+```
+Question [2]
+```{r}
+ourData2 <- OurData %>%
+  mutate(slp=as.numeric(Sleep_Hrs)) %>%
+  mutate(Phone_Hrs=as.numeric(Phone_Time))
+```
+Question [3]
+```{r}
+ggplot(ourData2,aes(x=Phone_Hrs,y=slp)) + geom_jitter()
+```
+There does not appear to be any sort of linear relationship between phone hours and sleep.
+Question [4]
+
+```{r}
+t.test(ourData2$Phone_Hrs)
+```
+mean phone usage hours is between the intervals of 3.700369 - 4.531694 with 95%
+confidence.

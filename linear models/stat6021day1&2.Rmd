@@ -7,7 +7,31 @@ output: html_document
 
 ```{r}
 library(ggplot2)
+library(tidyverse)
 ggplot(mtcars, aes(mpg,cyl))+geom_jitter()
 ```
 
+```{r}
+OurData <- read.csv('ClassData.csv')
+ourData5<-OurData %>%
+  mutate(slp=as.numeric(Sleep_Hrs))
+t.test(ourData5$slp)
+```
+bootstraping
+```{r}
+mean_calc<-function(x){
+  return(mean(x, na.rm = TRUE))
+}
+bootstrapMeans <- replicate(10000, {
+bootstrap <- sample(ourData5$slp, replace = T)
+mean_calc(bootstrap)
+})
+bootDf <- data.frame(bootstrapMeans)
+head(bootDf)
+ggplot(bootDf,aes(bootstrapMeans))+ geom_density()
+```
+
+```{r}
+quantile(bootstrapMeans, c(0.025,0.975))
+```
 
