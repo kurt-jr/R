@@ -1,0 +1,13 @@
+---
+title: "Linear day 1"
+author: "Kurt"
+date: "2024-07-15"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+ggplot(mtcars, aes(mpg,cyl))+geom_jitter()
+```
+
+
