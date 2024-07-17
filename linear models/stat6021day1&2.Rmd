@@ -35,3 +35,13 @@ ggplot(bootDf,aes(bootstrapMeans))+ geom_density()
 quantile(bootstrapMeans, c(0.025,0.975))
 ```
 
+```{r}
+prop.test(40,100,p=0.85,alternative = "l")
+```
+
+
+```{r}
+t.test(ourData5$slp,mu=6)
+t.test(ourData5$slp,mu=6, alternative = "greater")
+```
+
