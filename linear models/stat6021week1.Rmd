@@ -44,4 +44,12 @@ prop.test(40,100,p=0.85,alternative = "l")
 t.test(ourData5$slp,mu=6)
 t.test(ourData5$slp,mu=6, alternative = "greater")
 ```
-
+```{r}
+nba <- read.csv('nba.csv')
+table(nba$W.L,nba$home_away)
+```
+Succsess over total
+```{r}
+prop.test(c(518,712),c(1230,1230))
+```
+They are 95% confident that the away wins are between 11.8-19.8% less than the home wins.
