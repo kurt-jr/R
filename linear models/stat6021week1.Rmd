@@ -52,4 +52,43 @@ Succsess over total
 ```{r}
 prop.test(c(518,712),c(1230,1230))
 ```
-They are 95% confident that the away wins are between 11.8-19.8% less than the home wins.
+They are 95% confident that for all nba games the away wins are between 11.8-19.8 percentage points less than the home wins.
+```{r}
+ggplot(nba, aes(home_away, fill = W.L)) + geom_bar(position = 'fill')
+```
+
+Average points won between home and away games
+```{r}
+t.test(PTS~home_away, data=nba)
+```
+We are 95% confident that the average points scored in all nba games  is 1.155093 - 3.056289 more points higher in home games than in road games
+
+```{r}
+ggplot(nba, aes(home_away,PTS, fill = home_away)) + geom_violin()+ geom_jitter()
+```
+
+```{r}
+class2 <- mutate(OurData, AgeDiff = as.numeric(gsub("years","",Age_Diff_Parents)))
+view(class2)
+t.test(class2$AgeDiff)
+```
+Thursday
+```{r}
+CT <- read.csv("Clinical_trial.csv")
+head(CT)
+```
+Anova 
+```{r}
+anovaCT <- aov(Pain_Rating~Drug, data = CT)
+summary(anovaCT)
+```
+
+
+```{r}
+TurkeyHSD(anovaCT,conf.level = 0.95)
+```
+
+```{r}
+
+```
+
