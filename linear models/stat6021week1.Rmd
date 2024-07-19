@@ -89,6 +89,8 @@ TurkeyHSD(anovaCT,conf.level = 0.95)
 ```
 
 ```{r}
-
+startups <- read.csv("Startups.csv")
+library(ggplot2)
+ggplot(startups, aes(R.D.Spend,Profit)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
 ```
 
