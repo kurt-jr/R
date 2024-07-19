@@ -85,7 +85,7 @@ summary(anovaCT)
 
 
 ```{r}
-TurkeyHSD(anovaCT,conf.level = 0.95)
+TukeyHSD(anovaCT,conf.level = 0.95)
 ```
 
 ```{r}
@@ -94,3 +94,18 @@ library(ggplot2)
 ggplot(startups, aes(R.D.Spend,Profit)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
 ```
 
+
+corelation and standard deviation/ beta 1 = cor * sd of profit / sd rdspend
+```{r}
+cor(startups$Profit,startups$R.D.Spend)
+sd(startups$Profit)
+sd(startups$R.D.Spend)
+beta1 <- cor(startups$Profit,startups$R.D.Spend) * sd(startups$Profit) / sd(startups$R.D.Spend)
+beta1
+mean(startups$Profit)-beta1*mean(startups$R.D.Spend)
+```
+least squared method
+```{r}
+mod<-lm(Profit~R.D.Spend, data = startups)
+coef(mod)
+```
