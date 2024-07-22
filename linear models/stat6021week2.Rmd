@@ -1,0 +1,37 @@
+---
+title: "stat6021week2"
+author: "Kurt"
+date: "2024-07-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+library(tidyverse)
+ggplot(startups, aes(R.D.Spend,Profit)) + geom_point()+ geom_smooth(method = lm, se = F)
+model1 <- lm(Profit~R.D.Spend, data = startups)
+coef(model1)  
+```
+```{r}
+Bootstrap_estimates<-replicate(5,{
+bootstrap_samples <- startups[sample(1:nrow(startups),nrow(startups),replace = T),]
+bootstrap_models <- lm(Profit~R.D.Spend, data = bootstrap_samples)
+coef(bootstrap_models)
+})
+
+```
+
+
+
+
+
+
+
