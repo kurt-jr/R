@@ -41,7 +41,7 @@ summarise(estimates, mean_b0=mean(X.Intercept.),mean_b1 = mean(R.D.Spend),na.rm 
 ```
 ```{r}
 model1.2 <- lm(Profit~R.D.Spend+Administration+Marketing.Spend,data = startups)
-coef(model.2)
+coef(model1.2)
 ```
 ```{r}
 ## Multiple Regression based on (XtX)-1 Xty
@@ -68,6 +68,37 @@ Tuesday
 ## Facet wrap scatterplot
 long <- gather(startups, key = "predictor", value = "value", R.D.Spend, Administration, Marketing.Spend)
 head(long)
-ggplot(long, aes(value,Profit))+ geom_point()+facet_wrap(~predictor,scales = "free_x")
+ggplot(long, aes(value,Profit, color = Profit))+ geom_point()+facet_wrap(~predictor,scales = "free_x")
 ```
+Multiple Regression model
+```{r}
+models1 <- lm(Profit~R.D.Spend + Administration + Marketing.Spend, data = startups)
+coef(models1)
+startup_pred <- mutate(startups, predictions = fitted(models1), resid = residuals(models1))
+ggplot(startup_pred, aes(predictions, resid))+geom_point()+geom_hline(yintercept = 0, color='magenta3')
+```
+
+```{r}
+ggplot(startup_pred, aes(sample=resid))+stat_qq(color = 'mediumvioletred')+stat_qq_line(color='lightsteelblue1')
+```
+
+
+```{r}
+planets <- read.csv('PlanetsData.csv')
+ggplot(planets, aes(distance, revolution, colour = 'tomato3')) + geom_point() + geom_smooth(method = 'lm', color = 'peachpuff', se = F)
+```
+```{r}
+model2 <- lm(revolution~distance, data=planets)
+coef(model2)
+planets_pred <- mutate(planets, pred=fitted(model2),resid=residuals(model2))
+ggplot(planets_pred, aes(pred,resid)) + geom_point(color = 'mediumorchid3')+geom_hline(yintercept=0, color='palevioletred2')
+```
+
+
+```{r}
+ggplot(planets_pred, aes(sample =resid)) + stat_qq(color = 'thistle1')+stat_qq_line(color='slategray2')
+```
+
+
+
 
