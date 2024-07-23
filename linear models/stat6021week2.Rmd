@@ -20,18 +20,54 @@ ggplot(startups, aes(R.D.Spend,Profit)) + geom_point()+ geom_smooth(method = lm,
 model1 <- lm(Profit~R.D.Spend, data = startups)
 coef(model1)  
 ```
+
+
 ```{r}
-Bootstrap_estimates<-replicate(5,{
+Bootstrap_estimates<-replicate(1000,{
 bootstrap_samples <- startups[sample(1:nrow(startups),nrow(startups),replace = T),]
 bootstrap_models <- lm(Profit~R.D.Spend, data = bootstrap_samples)
 coef(bootstrap_models)
 })
+```
+```{r}
+estimates <- data.frame(t(Bootstrap_estimates))
+estimates
+ggplot(startups, aes(R.D.Spend,Profit)) + geom_point()+ geom_smooth(method = lm, se = F, color='blue')+
+  geom_abline(data = estimates, aes(intercept = X.Intercept., slope = R.D.Spend), color = 'magenta')
+```
 
+```{r}
+summarise(estimates, mean_b0=mean(X.Intercept.),mean_b1 = mean(R.D.Spend),na.rm = TRUE)
+```
+```{r}
+model1.2 <- lm(Profit~R.D.Spend+Administration+Marketing.Spend,data = startups)
+coef(model.2)
+```
+```{r}
+## Multiple Regression based on (XtX)-1 Xty
+
+X<-cbind(1,startups$R.D.Spend, startups$Administration,
+        startups$Marketing.Spend)
+XtX<-t(X)%*%X
+inverse_XtX<-solve(XtX)
+
+Xty<-t(X)%*%startups$Profit
+
+beta<-inverse_XtX%*%Xty
+```
+
+```{r}
+## Facet wrap scatterplot
+Startups2<-gather(startups, key="predictor", value = "value",
+                  R.D.Spend,Administration,Marketing.Spend)
 ```
 
 
-
-
-
-
+Tuesday
+```{r}
+## Facet wrap scatterplot
+long <- gather(startups, key = "predictor", value = "value", R.D.Spend, Administration, Marketing.Spend)
+head(long)
+ggplot(long, aes(value,Profit))+ geom_point()+facet_wrap(~predictor,scales = "free_x")
+```
 
