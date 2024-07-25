@@ -141,3 +141,22 @@ H0: B1 = 0 no linear relationship
 Ha: b1 != 0 there is a linear relationship
 
 p-value< α reject H0, else do not reject
+smaller p-value more of a significant relationship (R.D.Spend)
+high p value not a useful predictor(Administration) should not be used to predict 
+
+
+```{r}
+model2 <- lm(Profit~R.D.Spend+Marketing.Spend, data=startups)
+summary(model2)
+```
+getting rid of the bad predictor changes estimates and standard errors
+
+Stepwise Regression - forward selection -  backward elimination
+
+AIC - Akiaike Information Criteria
+
+```{r}
+library(MASS)
+aic <- stepAIC(model1, direction = "both")
+```
+
