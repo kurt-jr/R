@@ -119,4 +119,25 @@ Startups2 <- startups[,-4]
 cor_mat <- round(cor(Startups2),2)
 cor_mat
 ```
+```{r}
+ggcorrplot(cor_mat, lab = T, type = "upper")
+```
 
+
+
+
+
+```{r}
+model10 <- lm(Profit~R.D.Spend + Administration + Marketing.Spend, data = startups)
+summary(model10)
+vif(model10) #Variance Inflation Factor (VIF)
+```
+Thursday
+```{r}
+model1 <- lm(Profit~R.D.Spend+Administration+Marketing.Spend, data=startups)
+summary(model1)
+```
+H0: B1 = 0 no linear relationship
+Ha: b1 != 0 there is a linear relationship
+
+p-value< α reject H0, else do not reject
