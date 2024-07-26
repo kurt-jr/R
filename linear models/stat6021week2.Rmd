@@ -159,4 +159,8 @@ AIC - Akiaike Information Criteria
 library(MASS)
 aic <- stepAIC(model1, direction = "both")
 ```
+command option i new markdown cell
+```{r}
+
+```
 
