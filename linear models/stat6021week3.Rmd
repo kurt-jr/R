@@ -146,10 +146,40 @@ head(leverage)
 
 
 train-test split
+do not replace, not replacing by default
 ```{r}
-split <- sample(1:nrow(insurance), size = 0.8*nrow(insurance), )
+split <- sample(1:nrow(insurance), size = floor(0.8*nrow(insurance)))
+train_data <- insurance[split,]
+test_data <- insurance[-split,]
+model2 <- lm(charges~age+bmi+children+smoker+region, data = train_data)
+summary(model2)
+predictions <- predict(model2,test_data)
+rmse<-sqrt(mean((predictions-test_data$charges)^2))
+rmse
+RMSE(predictions, test_data$charges)
+R2(predictions, test_data$charges)
+MAE(predictions, test_data$charges)
 ```
 
+```{r}
+install.packages("caret")
+library(caret)
+map_dbl(1:5, ~.x^2)
+CV <- function(data,k){
+  folds<-createFolds(insurance$charges,k=k)
+  map_dbl(folds,function(indices){
+    train_data<-data[-indices,]
+    test_data<-data[indices,]
+    model5 <- lm(charges~.-sex,data=train_data)
+    predictions<-predict(model5, test_data)
+    sqrt(mean((predictions-test_data$charges)^2))
+  }) %>% mean()
+}
+CV(insurance, 5)
+
+repeated <- replicate(10,CV(insurance, 5))
+mean(repeated)
+```
 
 
 
