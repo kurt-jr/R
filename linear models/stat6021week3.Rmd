@@ -101,3 +101,55 @@ view(dat_ins)
 filter(dat_ins, .std.resid>2)
 ```
 
+Wednesday- outliers
+treating outliers
+Transform response
+2 Consider context and subject matter knowledge
+3 Measurement error?
+4 Winsorize: Replace extreme values with the nearest values that are
+not outliers. For example, replace values above the 95th percentile
+with the value at the 95th percentile.
+5 Trim/remove point (last resort)
+6 Use other techniques like quantile regression or Random Forest which
+are resistant to outliers
+
+Leverage Points: data points that have extreme values for the predictor
+variables. These points have a large influence on the fitted values of the
+model but not necessarily on the regression coefficients themselves.
+Detection:
+1 Leverage values are in the diagonals of the Hat matrix: (XT X)−1XT
+2 High leverage points are identified by leverage values greater than 2(p+1)/n
+
+
+Influential points are data points that have a disproportionately large
+impact on the regression model’s coefficients and fitted values.
+1 NOTE: Data points that are both high leverage points and outliers
+are often influential because their combination of having extreme
+predictor values and large residuals gives them a significant impact on
+the regression model
+Detection: Cook’s Distance: a threshold of 4/n
+
+```{r}
+model1 <- lm(charges~., data = insurance)
+summary(model1)
+```
+```{r}
+diagnostics <- model1 %>%
+  augment(data = insurance)
+outliers <- filter(diagnostics, abs(.std.resid) >3)
+leverage <- filter(diagnostics, .hat >2*(6+1)/nrow(insurance))
+influence <- filter(diagnostics, .cooksd>4/nrow(insurance))
+head(influence)
+head(leverage)
+```
+.hat is leverage point
+
+
+train-test split
+```{r}
+split <- sample(1:nrow(insurance), size = 0.8*nrow(insurance), )
+```
+
+
+
+
