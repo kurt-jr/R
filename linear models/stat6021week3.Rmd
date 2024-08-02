@@ -227,11 +227,80 @@ x <-model.matrix(Points~0+.,data = laliga2)
 head(x)
 y <- laliga2$Points
 rmodel <- glmnet(x,y, alpha = 0)
+plot(rmodel, label = T, xvar = "lambda")
+plot(rmodel, label = T, xvar = "dev")
+kcvglmnet <- cv.glmnet(x,y, alpha = 0, nfolds = 3)
+kcvglmnet$lambda.min
+predict(rmodel, type = "response", s=kcvglmnet$lambda.min,newx=x[1:2,])
 ```
 
 
+Friday
+
+```{r}
+x <-model.matrix(Points~0+.,data = laliga2)
+y <- laliga2$Points
+rmodel <- glmnet(x,y, alpha = 0)
+kcvglmnet <- cv.glmnet(x,y, alpha = 0, nfolds = 3)
+kcvglmnet$lambda.min
+lse <- kcvglmnet$lambda.lse
+lse
+```
+
+```{r}
+predict(rmodel, type = 'response', s=kcvglmnet$lambda.lse,newx = x[1:2,])
+predict(rmodel, type = 'coefficient', s=kcvglmnet$lambda.lse,newx = x[1:2,])
 
 
+plot(rmodel, label=T, xvar = 'lambda')+abline(v=log(kcvglmnet$lambda.lse))
+```
 
+Principal Component Analysis (PCA) is a multivariate technique designed to summarize the most important features and relations of p numerical random variables.
 
+1 PCA computes a new set of variables, the principal component that contains the same information as the p numerical random variables but expressed in a more convenient way.
+2 The goal of PCA is to retain only a limited number of principal components that explain most of the information, therefore performing dimension reduction.
+3 Remarkably, PCA computes the principal components in an ordered way: the first principal component explains the most of the information (quantified as the variance) of p numerical random variables, and then the explained information decreases monotonically down to the last principal component. That is:
+Var (Γ1) ≥ Var (Γ2) ≥ · · · Var (Γp )
+4 The principal components are uncorrelated even if the p numerical random variables are correlated.
+
+```{r}
+pca <- princomp(laliga2, fix_sign = T)
+summary(pca)
+plot(pca,type ='l')
+pca2<- princomp(laliga2, cor = T, fix_sign = T)
+summary(pca2)
+pca2$scores
+biplot(pca2)
+```
+
+The key idea behind Principal Components Regression (PCR) is to regress the response in a set of principal components obtained from the predictors
+• The motivation is that often a small number of principal components is enough to explain most of the variability of the predictors and consequently their relationship with the response.
+• Advantages: No multicolinearity, less coefficients to estimate
+• Disadvantages:
+• Interpretation of the coefficients is not directly related with the predictors, but with the principal components. Hence, the interpretability of a given coefficient in the regression model is tied to the interpretability of the associated principal component.
+• Prediction needs an extra step, since it is required to obtain the scores of the new observations of the predictors.
+
+```{r}
+laliga3<- laliga2[,-1]
+pca3 <- princomp(laliga3, cor=T,fix_sign=T)
+pca_data<- data.frame(Points= laliga2$Points, pca3$scores)
+pcareg<- lm(Points~., data = pca_data)
+summary(pcareg)
+```
+
+```{r}
+car::vif(pcareg)
+pcareg2<-lm(Points~Comp.1+Comp.2+Comp.3, data = pca_data)
+summary(pcareg2)
+```
+```{r}
+install.packages("pls")
+library(pls)
+```
+
+```{r}
+la14 <-subset(laliga2, select = -c(Wins,Draws,Loses))
+pcareg3 <- pcr(Points~., data=la14,scale=T)
+summary(pcareg3)
+```
 
