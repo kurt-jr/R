@@ -1,0 +1,61 @@
+---
+title: "stat6021week4"
+author: "Kurt"
+date: "2024-08-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Monday - Logistic Regression
+The logistic regression (logit model) is used to model the probability of a dichotomous outcome variable. For instance, if we are interested in
+building a model to predict:
+• The probability of a win/loss in an NBA game based on data on free throw percentage, number of rebounds, steals, blocks, etc.
+• The probability of a political candidate winning/losing an election based on polling data, amount of money spent on the campaign, the amount of time spent campaigning negatively and whether or not the candidate is an incumbent.
+• The probability of whether an incoming email needs to be classified as spam or not based on sender of the email and number of typos in the email.
+• The probability of approval/non-approval of loan for a bank customer based on credit score, income, number of credit cards, etc.
+• The probability of a particular cancer based on patient comorbidities.
+n the logit model, the log odds of the outcome is modeled as a linear
+combination of the predictor variables.
+• More formally, let Y be the binary outcome variable indicating success/failure with probability of success p. That is, P(Y = 1) = p.
+Then the logistic regression of Y on the predictor variables
+x1, x2, · · · , xk is
+logit(p) = ln  (p/(1 − p)) = β0 + β1x1 + β2x2 + · · · + βk xk
+
+Interpreting the slope coefficients
+Logistic Regression slope coefficients are interpreted the same as multiple regression slope coefficients, except that the response variable in the modelis in terms of the log of the odds. If we exponentiate the coefficients, we can interpret them as the change in the odds of the response for every one unit increase in the predictor, holding other predictors fixed.
+How much change in the odds of the response variable:
+• If the exponentiated coefficient is between 0 and 1, there is a (1−exponentiated coefficient) ×100% decrease in the odds of the response for every one unit increase in the corresponding predictor, holding other predictors fixed.
+• If the exponentiated coefficient is above 1, there is a (exponentiated coefficient −1) × 100% increase in the odds of the response for every one unit increase in the corresponding predictor, holding other predictors fixed.
+• If the exponentiated coefficient is exactly 1, there is no change in the odds of the response for every one unit increase in the corresponding predictor, holding other predictors fixed.
+
+
+
+```{r}
+nba <- read.csv(NBA_raw.csv)
+View(nba)
+```
+```{r}
+library(tidyverse)
+```
+```{r}
+nba2<- nba %>%
+  mutate(home_away=ifelse(grepl('vs',MATCHUP), 'home', 'away'),
+         win=ifelse(W.L=='W',1,0)) %>%
+  rename(TPP=TPP) %>%
+  select(W.L,win,home_away,MIN,PTS,FGP,TPP,FTP,REB,AST,STL,BLK,TOV,PF)
+View(nba2)
+```
+```{r}
+ggplot(nba2, aes(home_away,fill= factor(win), colour = factor(win))) + geom_bar(position = 'fill')
+dat <-nba2[,-c(1,2,3)]
+cor_mat <- round(cor(dat), 2)
+ggcorrplot::ggcorrplot(cor_mat, lab = T, method = 'circle', type = 'lower')
+```
+```{r}
+logit_model2 <- glm(win~.-W.L, nba2, family='binomial')
+summary(logit_model2)
+```
+
