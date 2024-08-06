@@ -34,7 +34,7 @@ How much change in the odds of the response variable:
 
 
 ```{r}
-nba <- read.csv(NBA_raw.csv)
+nba <- read.csv("NBA_raw.csv")
 View(nba)
 ```
 ```{r}
@@ -44,7 +44,7 @@ library(tidyverse)
 nba2<- nba %>%
   mutate(home_away=ifelse(grepl('vs',MATCHUP), 'home', 'away'),
          win=ifelse(W.L=='W',1,0)) %>%
-  rename(TPP=TPP) %>%
+  rename(FGP=FG.,TPP=X3P.,FTP=FT.) %>%
   select(W.L,win,home_away,MIN,PTS,FGP,TPP,FTP,REB,AST,STL,BLK,TOV,PF)
 View(nba2)
 ```
@@ -57,5 +57,148 @@ ggcorrplot::ggcorrplot(cor_mat, lab = T, method = 'circle', type = 'lower')
 ```{r}
 logit_model2 <- glm(win~.-W.L, nba2, family='binomial')
 summary(logit_model2)
+```
+
+```{r}
+library(caret)
+logit_model1 <- glm(win~.-W.L-PTS, nba2, family='binomial')
+logit_model3 <- train(W.L~.-win, nba2, method = 'glm', family = 'binomial')
+summary(logit_model3)
+```
+```{r}
+logit_model4 <- train(W.L~.-win-PTS,nba2, method = 'glm', family = 'binomial')
+summary(logit_model4)
+```
+
+```{r}
+aic<-MASS::stepAIC(logit_model2, direction = "both", trace=FALSE)
+summary(aic)
+#OR in caret train()
+
+logit_aic<-train(W.L~.-win-PTS,nba2,method="glmStepAIC",family="binomial", trace=FALSE)
+summary(logit_aic)
+
+# Note same results to logit_model 3 and 4.
+
+## Idea two: interact home_away with PTS since home_away 
+#might affect PTS
+
+logit_model5<-train(W.L~.-win+PTS*home_away,nba2,method="glm",family="binomial")
+summary(logit_model5)
+
+#OR
+
+logit_model6<-train(W.L~.-win+PTS*home_away,nba2,method="glm",family="binomial")
+summary(logit_model6)
+
+# It appears this is not the case since p-values for PTS and 
+# the interaction term is still high. Thus, removing PTS from
+# the model is a better idea. Although, you can try other 
+# interaction ideas, for example FGP (Field Goal Percentage)
+# and home_away.
+```
+
+```{r}
+
+### Final model for prediction: either logit_model 3 or 4
+## or aic or logit aic.
+
+## Let's check for multicoliearity to make compliment the corplot
+
+car::vif(logit_model1)
+
+##OR for the train models:
+
+car::vif(logit_model4$finalModel)
+
+#All vif values are all less tha 5, so no multicolinearity!
+
+### Understanding the model: show how to write down the model
+#aic or model 3 or 4 down:
+
+# Ln(p/(1-p)) = -24.499808+0.129650*I_home -0.039539*MIN + ...
+
+
+## Interpreting the coefficients: refer to slide.
+# For example let's interpret coefficient of FGP: 0.375232
+# First, exponentiate the coefficients to be able to 
+# interpret them as change is odds of a win:
+
+exp(coef(logit_model1))
+
+# Now we will interpret the exponentiated coefficient for 
+# FGP: 1.443548e+00 or 1.443548. Note away games is the reference
+# category so here is the interpretation:
+# For every one percentage point increase in the Field goal 
+# percentage for NBA games, the odds of a win increases
+# by 44.35%(that is, 1.443548-1=44.35%) for away games.
+```
+
+```{r}
+
+## Lastly if you have time, we want to make predictions with
+# the model.
+
+# We need new data:
+
+new_dat<-nba2[1:2, -2] 
+
+#Note: it still want a value for W.L and PTS since our model:
+# logit_model3<-glm(win~.-W.L-PTS,nba2,family="binomial")
+# had -W.L and -PTS. These values are not included
+# in the prediction however. You can avoid it by
+# subsetting nba2 to remove W.L and PTS and use the 
+# resulting dataframe to build the model.
+
+predict(logit_model3,new_dat,type = "response")
+
+##OR
+
+new_dat2<-nba2[1:2, -1]
+predict(logit_model4,new_dat2,type = "raw")
+predict(logit_model4,new_dat2,type = "prob")
+
+# Two predictions here since we used rows 1 and 2 in nba2.
+# Win prob for row 1 is 0.601874707 (Win since >0.5)
+# Win prob for row 2 is 0.007856602 (Loss) Which matches the 
+# observed outcomes.
+
+# Note: They might ask you about cross validation and confusion
+# matrix, I will cover that on Tuesday!
+
+logit_model5 <- train(W.L ~.-win-PTS*home_away,nba2,method='glm', family ='binomial')
+summary(logit_model5)
+```
+
+Tuesday
+
+```{r}
+glm_model <- glm(win~.-W.L-PTS,nba2, family = 'binomial')
+logit<- train(W.L~.-win-PTS,nba2,method='glm', family = 'binomial')
+exp(coef(glm_model))
+```
+ For every 1 percaentage point increase in FGP the odds of a win increases by 44.3% (1.443 - 1)
+ For home games compared to away games 
+exp 0-1 is a decrese in odds, 1 is no change in odds, > 1 is an increase in odds.
+exp coef - 1 is how much the odds increase FGP odds increase by .44
+1- exp coef  is how much the odds decrease
+
+```{r}
+new_dat<-nba2[1:2, -2] 
+predict(glm_model,new_dat,type = "response")
+#Note: it still want a value for W.L and PTS since our model:
+# logit_model3<-glm(win~.-W.L-PTS,nba2,family="binomial")
+# had -W.L and -PTS. These values are not included
+# in the prediction however. You can avoid it by
+# subsetting nba2 to remove W.L and PTS and use the 
+# resulting dataframe to build the model
+```
+
+
+```{r}
+new_dat2<-nba2[1:2, -1]
+predict(glm_model,new_dat2,type = "raw")
+predict(glm_model,new_dat2,type = "prob")
+
 ```
 
